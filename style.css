@@ -1,0 +1,22 @@
+body {
+    text-align:center;
+    background-color: #d0f0c0;
+}
+
+h1 {
+    font-family: Mexcellent3D-Regular;
+    font-weight: normal;
+    font-size: 4.4rem;
+    color: hotpink;
+    margin: 25px 0;
+}
+
+p {
+    font-family: 'Avenir';
+    font-size: 1.2em;
+}
+
+#frogger{
+    width: 1024px;
+    margin: 0 auto;
+}
