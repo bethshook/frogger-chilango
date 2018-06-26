@@ -9,6 +9,8 @@ h1 {
     font-size: 4.4rem;
     color: hotpink;
     margin: 25px 0;
+    text-align: left;
+    float: left;
 }
 
 p {
@@ -19,4 +21,14 @@ p {
 #frogger{
     width: 1024px;
     margin: 0 auto;
+}
+
+header {
+    position: relative;
+}
+
+header img{
+    position: absolute;
+    top: 24px;
+    right: 0;
 }
