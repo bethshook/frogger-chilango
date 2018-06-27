@@ -13,7 +13,7 @@ var images = {
     bg: './images/cdmx-clean.png',
     car: './images/taxi.png',
     truck: './images/truck.png',
-    cyclist: './images/cyclist.png',
+    cyclist: './images/cyclist2.png',
     trajinera: './images/trajinera.png',
     axolotl: './images/axolotl.png',
     chinampa: './images/chinampa.png',
@@ -29,6 +29,7 @@ var trajineras = [];
 var axolotls = [];
 var lives = 4;
 var score = 0;
+var wins = 0;
 
 //classes
 class Board{
@@ -49,13 +50,13 @@ class Board{
         ctx.font = "120px Mexcellent-Regular";
         ctx.fillStyle = 'white';
         ctx.fillText("Game Over", 230,230);
-        ctx.font = "28px Courier";
+        ctx.font = "18px Courier";
         ctx.fillStyle = 'black';
-        var playerScore = Math.floor(frames / 60);
-        ctx.fillText("Press 'Esc' to reset", 320,canvas.height-30);
+        ctx.fillText("Press 'Esc' to play again", 370,canvas.height-30);
         ctx.fillStyle = 'red';
         ctx.font = "40px Mexcellent-Regular";
-        ctx.fillText("Player Score: " + playerScore, 360,300);
+        var time = Math.floor(frames / 60);
+        ctx.fillText("Player Score: " + (score + time), 360,300);
         ctx.globalAlpha = 0.5;
         ctx.fillStyle = "gray";
         ctx.fillRect(this.x, this.y, canvas.width, canvas.height);
@@ -80,15 +81,16 @@ class Board{
         ctx.closePath();
         ctx.stroke();
         ctx.fillStyle = "black";
-        ctx.font = '24px Courier';
-        ctx.fillText("Score: " + score, 30, 40 )
+        ctx.font = '22px Courier';
+        ctx.fillText("Score: " + score, 30, 25)
+        ctx.fillText("Time: " + Math.floor(frames / 60), 30, 50)
     }
 }
   
 class Xolo{
-  constructor(){
-      this.x = canvas.width / 2;
-      this.y = canvas.height - 62;
+  constructor(x,y){
+      this.x = x;
+      this.y = y;
       this.width = 62;
       this.height = 62;
       this.image = new Image();
@@ -185,7 +187,7 @@ class Car{
     }
   
       draw(){
-        this.x-=4;
+        this.x-=5;
         ctx.drawImage(this.image,this.x,this.y,this.width,this.height);
       }
   }
@@ -271,10 +273,14 @@ class Car{
 
 //instances
 var board = new Board();
-var xolo = new Xolo();
+var xolo = new Xolo(canvas.width / 2,canvas.height - 62);
 var chinampaOne = new Chinampa(canvas.width - 512, 0, images.chinampa);
 var chinampaTwo = new Chinampa(canvas.width - 320, 0, images.chinampa);
 var chinampaThree = new Chinampa(canvas.width - 128, 0, images.chinampa);
+var xoloWinOne = new Xolo(chinampaOne.x,chinampaOne.y);
+var xoloWinTwo = new Xolo(chinampaTwo.x,chinampaTwo.y);
+var xoloWinThree = new Xolo(chinampaThree.x,chinampaThree.y);
+
 // var life = new XoloHead(160,12,images.head)
 
 //main functions
@@ -282,7 +288,6 @@ function update(){
     frames++;
     ctx.clearRect(0,0,canvas.width,canvas.height);
     board.draw();
-    xolo.draw();
     chinampaOne.draw();
     chinampaTwo.draw();
     chinampaThree.draw();
@@ -291,24 +296,33 @@ function update(){
     drawTrajineras();
     generateAxolotls();
     drawAxolotls();
+    xolo.draw();
     generateTaxis();
     drawTaxis();
     generateTrucks();
     drawTrucks();
     generateTamaleros();
     drawTamaleros();
-    // life.draw();
-    if (!xolo.isTouching(trajinera) && !xolo.isTouching(axolotl)) {
-    if ((xolo.y < 192) && (xolo.y > 64)) xoloDies();
+    checkIfWon();
+    if (wins === 1) {
+        xoloWinOne.draw()
+    };
+    if (wins === 2) {
+        xoloWinOne.draw(); xoloWinTwo.draw()
+    };
+    if (wins === 3) {
+        xoloWinOne.draw(); xoloWinTwo.draw(); xoloWinThree.draw();
+    }
+    if ((xolo.x < 0) || (xolo.x > canvas.width - 64)) {
+        xoloDies();
+    }
+    
 }
-    if ((xolo.x < 0) || (xolo.x > canvas.width - 64)) xoloDies();
-    if (xolo.isTouching(chinampaOne) || xolo.isTouching(chinampaTwo) || xolo.isTouching(chinampaThree)) score+=50; //these are not working
-  }
   
   function start(){
     if(interval) return; //what does this do
     interval = setInterval(update, 1000/60);
-    sound.play();
+    // sound.play();
   }
   
 
@@ -330,7 +344,8 @@ function drawTaxis(){
 }
 
 function generateTrucks(){
-    if(!(frames%120===0) ) return;
+    var num = Math.floor(Math.random() * 50 + 110 )
+    if(!(frames%num===0) ) return;
     var truck = new Truck(canvas.width, canvas.height - 192, images.truck);
     trucks.push(truck);
 }
@@ -345,7 +360,8 @@ function drawTrucks(){
 }
 
 function generateTamaleros(){
-    if(!(frames%140===0) ) return;
+    var num = Math.floor(Math.random() * 20 + 140 )
+    if(!(frames%num===0) ) return;
     var tamalero = new Bike(-64, canvas.height - 256, images.cyclist);
     tamaleros.push(tamalero);
 }
@@ -360,8 +376,9 @@ function drawTamaleros(){
 }
 
 function generateTrajineras(){
-    if(!(frames%190===0) ) return;
-    var trajinera = new Trajinera(-64, 125, images.trajinera);
+    var num = Math.floor(Math.random() * 30 + 140 )
+    if(!(frames%num===0) ) return;
+    var trajinera = new Trajinera(-64, 128, images.trajinera);
     trajineras.push(trajinera);
 }
 
@@ -376,7 +393,7 @@ function drawTrajineras(){
 
 function generateAxolotls(){
     if(!(frames%170===0) ) return;
-    var axolotl = new Axolotl(canvas.width, 61, images.axolotl);
+    var axolotl = new Axolotl(canvas.width, 64, images.axolotl);
     axolotls.push(axolotl);
 }
 
@@ -398,6 +415,34 @@ function drawLives(){
     }
 }
 
+function checkIfDrowning(){
+        var onTrajinera = false;
+        if ((xolo.y === 125)) onTrajinera = true;
+        var onAxolotl = false;
+        if ((xolo.y === 61)) onAxolotl = true;
+        var inWater = (xolo.y <= 130) && (xolo.y > 64);
+        return !onTrajinera && !onAxolotl && inWater;
+}
+
+function checkIfWon(){
+    if (xolo.isTouching(chinampaOne) || xolo.isTouching(chinampaTwo) || xolo.isTouching(chinampaThree)) {
+        console.log(wins);
+        score+=50; //these are not working
+        clearInterval(interval);
+        sound.pause();
+        interval = undefined;
+        sound.currentTime = 0;
+        setTimeout(function(){
+            wins++;
+            if (wins === 3) {
+                youWon();
+            } else {
+            restart();
+        }
+        }, 1000);
+  }
+}
+
 function xoloDies(){
     clearInterval(interval);
     sound.pause();
@@ -405,7 +450,7 @@ function xoloDies(){
     sound.currentTime = 0;
     ctx.fillStyle = "#fe3f80";
     ctx.font = '80px Mexcellent-Regular';
-    ctx.fillText("x", xolo.x + 16, xolo.y+64)
+    ctx.fillText("x", xolo.x + 16, xolo.y+64);
     lives--;
     if (lives===0) {
         board.gameOver();
@@ -414,6 +459,22 @@ function xoloDies(){
             restart();
         }, 1000);
     }
+}
+
+function youWon(){
+    ctx.font = "120px Mexcellent-Regular";
+        ctx.fillStyle = 'white';
+        ctx.fillText("you won!", 280,230);
+        ctx.font = "18px Courier";
+        ctx.fillStyle = 'black';
+        ctx.fillText("Press 'Esc' to play again", 370,canvas.height-30);
+        ctx.fillStyle = 'red';
+        ctx.font = "40px Mexcellent-Regular";
+        var time = Math.floor(frames / 60);
+        ctx.fillText("Player Score: " + (score + time), 360,300);
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = "gray";
+        ctx.fillRect(this.x, this.y, canvas.width, canvas.height);
 }
 
 function xoloHopsOn(item){
