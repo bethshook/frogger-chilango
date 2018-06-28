@@ -39,6 +39,7 @@ var onAxolotl = false;
 var onChinampaOne = false;
 var onChinampaTwo = false;
 var onChinampaThree = false;
+var playerOneScore;
 
 //classes
 class Board{
@@ -56,6 +57,7 @@ class Board{
     }
   
     gameOver(){
+        console.log(player)
         onChinampaOne = false;
         onChinampaTwo = false;
         onChinampaThree = false;
@@ -67,7 +69,7 @@ class Board{
         ctx.fillText("Press 'Esc' to play again", 370,canvas.height-30);
         ctx.fillStyle = 'red';
         ctx.font = "40px Mexcellent-Regular";
-        if (player === 1) {
+        if (player == 1) {
             playerOneScore = score - totalTime;
             ctx.fillText("Player One Score: " + playerOneScore, 315,300);
             totalTime = 0;
@@ -307,7 +309,6 @@ var xoloWinThree = new Xolo(chinampaThree.x,chinampaThree.y);
 
 //main functions
 function update(){
-    organ.play();
     currentTime = Math.floor(frames / 60);
     frames++;
     ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -350,7 +351,6 @@ function update(){
   function start(){
     if(interval) return; //what does this do
     interval = setInterval(update, 1000/60);
-    var playerOneScore;
     generateTrajineras();
     generateAxolotls();
     generateTaxis();
@@ -476,6 +476,7 @@ function xoloDies(){
     lives--;
     totalTime += currentTime;
     if (lives===0) {
+        organ.pause();
         sound.play();
         board.gameOver();
     } else {
@@ -521,11 +522,11 @@ function youWon(){
         ctx.fillStyle = 'red';
         ctx.font = "40px Mexcellent-Regular";
         if (player === 1) {
-            totalTime += Math.floor(frames / 60);
+            totalTime += currentTime;
             playerOneScore = score - totalTime;
             ctx.fillText("Player One Score: " + playerOneScore, 315,300);
         } else {
-            totalTime += Math.floor(frames / 60);
+            totalTime += currentTime;
             var playerTwoScore = score - totalTime;
             ctx.fillText("Player Two Score: " + playerTwoScore, 315,300);
             if (playerOneScore > playerTwoScore){
@@ -537,7 +538,6 @@ function youWon(){
 }
 
 function restart(){
-    organ.play();
     console.log(totalTime);
     if(interval) return;
     taxis = [];
@@ -557,6 +557,7 @@ function restart(){
 start();
 
 addEventListener('keydown', function(e){
+    organ.play();
     switch(e.keyCode){      
         case 39:
             xolo.goRight();
@@ -577,9 +578,12 @@ addEventListener('keydown', function(e){
         case 38:
         if (xolo.y > 64 || xolo.x >= chinampaOne.x) {
             xolo.goUp();
-            if (xolo.y === 0 && xolo.x > 512 && xolo.x < 632) xoloDies();
+            if (xolo.y === 0 && xolo.x > 512 && xolo.x < 624) xoloDies();
             if (xolo.y === 0 && xolo.x > 712 && xolo.x < 825) xoloDies();
             if (xolo.y === 0 && xolo.x > 900) xoloDies();
+            if (onChinampaOne && xolo.isTouching(chinampaOne)) xoloDies();
+            if (onChinampaTwo && xolo.isTouching(chinampaTwo)) xoloDies();
+            if (onChinampaThree && xolo.isTouching(chinampaThree)) xoloDies();
             if (onTrajinera) onTrajinera = false;
             if (onAxolotl) {
                 onAxolotl = false;
