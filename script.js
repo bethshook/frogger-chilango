@@ -4,7 +4,6 @@ window.onload = function() {
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 
-
 //constants
 var interval;
 var frames = 0;
@@ -22,6 +21,9 @@ var images = {
 var sound = new Audio();
 sound.src = './audio/tamales.mp3';
 sound.loop = true;
+var organ = new Audio();
+organ.src = './audio/organ.mp3';
+organ.loop = true;
 var taxis = [];
 var trucks = [];
 var tamaleros = [];
@@ -29,8 +31,14 @@ var trajineras = [];
 var axolotls = [];
 var lives = 4;
 var score = 0;
-var wins = 0;
 var player = 1;
+var totalTime = 0;
+var currentTime = 0;
+var onTrajinera = false;
+var onAxolotl = false;
+var onChinampaOne = false;
+var onChinampaTwo = false;
+var onChinampaThree = false;
 
 //classes
 class Board{
@@ -48,6 +56,9 @@ class Board{
     }
   
     gameOver(){
+        onChinampaOne = false;
+        onChinampaTwo = false;
+        onChinampaThree = false;
         ctx.font = "120px Mexcellent-Regular";
         ctx.fillStyle = 'white';
         ctx.fillText("Game Over", 230,230);
@@ -56,18 +67,20 @@ class Board{
         ctx.fillText("Press 'Esc' to play again", 370,canvas.height-30);
         ctx.fillStyle = 'red';
         ctx.font = "40px Mexcellent-Regular";
-        var time = Math.floor(frames / 60);
         if (player === 1) {
-            var playerOneScore = score - time;
+            playerOneScore = score - totalTime;
             ctx.fillText("Player One Score: " + playerOneScore, 315,300);
+            totalTime = 0;
         } else {
-            var playerTwoScore = score - time;
+            var playerTwoScore = score - totalTime;
             ctx.fillText("Player Two Score: " + playerTwoScore, 315,300);
             if (playerOneScore > playerTwoScore){
                 ctx.fillText("Player One Wins!", 340,365);
             } else {
                 ctx.fillText("Player Two Wins!", 340,365);
             }
+            totalTime = 0;
+
         }
         
     }
@@ -92,7 +105,7 @@ class Board{
         ctx.fillStyle = "black";
         ctx.font = '22px Courier';
         ctx.fillText("Score: " + score, 30, 25)
-        ctx.fillText("Time: " + Math.floor(frames / 60), 30, 50)
+        ctx.fillText("Time: " + currentTime, 30, 50)
     }
 }
   
@@ -175,7 +188,7 @@ class Car{
     }
     
       draw(){
-        this.x-=2;
+        this.x-=6;
         ctx.drawImage(this.image,this.x,this.y,this.width,this.height);
       }
   }
@@ -236,7 +249,7 @@ class Car{
     }
     
       draw(){
-        this.x+=3;
+        this.x+=4;
         ctx.drawImage(this.image,this.x,this.y,this.width,this.height);
       }
   }
@@ -289,57 +302,66 @@ var chinampaThree = new Chinampa(canvas.width - 192, 0, images.chinampa);
 var xoloWinOne = new Xolo(chinampaOne.x,chinampaOne.y);
 var xoloWinTwo = new Xolo(chinampaTwo.x,chinampaTwo.y);
 var xoloWinThree = new Xolo(chinampaThree.x,chinampaThree.y);
-var onTrajinera = false;
-var onAxolotl = false;
 
 // var life = new XoloHead(160,12,images.head)
 
 //main functions
 function update(){
+    organ.play();
+    currentTime = Math.floor(frames / 60);
     frames++;
     ctx.clearRect(0,0,canvas.width,canvas.height);
     board.draw();
     chinampaOne.draw();
     chinampaTwo.draw();
     chinampaThree.draw();
-    drawLives();
     generateTrajineras();
-    drawTrajineras();
     generateAxolotls();
+    generateTaxis();
+    generateTrucks();
+    generateTamaleros();
+    drawLives();
+    drawTrajineras();
     drawAxolotls();
     xolo.draw();
-    generateTaxis();
     drawTaxis();
-    generateTrucks();
     drawTrucks();
-    generateTamaleros();
     drawTamaleros();
     checkIfWon();
     if (checkIfDrowning()) xoloDies();
-    if (wins === 1) {
-        xoloWinOne.draw()
+    if (xolo.isTouching(chinampaOne)) {
+        onChinampaOne = true;
     };
-    if (wins === 2) {
-        xoloWinOne.draw(); xoloWinTwo.draw()
+    if (xolo.isTouching(chinampaTwo)) {
+        onChinampaTwo = true;
     };
-    if (wins === 3) {
-        xoloWinOne.draw(); xoloWinTwo.draw(); xoloWinThree.draw();
+    if (xolo.isTouching(chinampaThree)) {
+        onChinampaThree = true;
     }
     if ((xolo.x < 0) || (xolo.x > canvas.width - 64)) {
         xoloDies();
     }
+    if (onChinampaOne) xoloWinOne.draw();
+    if (onChinampaTwo) xoloWinTwo.draw();
+    if (onChinampaThree) xoloWinThree.draw();
     
 }
   
   function start(){
     if(interval) return; //what does this do
     interval = setInterval(update, 1000/60);
+    var playerOneScore;
+    generateTrajineras();
+    generateAxolotls();
+    generateTaxis();
+    generateTrucks();
+    generateTamaleros(); //added these to this function to get them started early
   }
 
 //aux functions
 
 function generateTaxis(){
-    if(!(frames%110===0) ) return;
+    if(!(frames%50===0) ) return;
     var taxi = new Car(canvas.width, canvas.height - 128, images.car);
     taxis.push(taxi);
 }
@@ -354,7 +376,7 @@ function drawTaxis(){
 }
 
 function generateTrucks(){
-    var num = Math.floor(Math.random() * 50 + 110 )
+    var num = Math.floor(Math.random() * 50 + 90 )
     if(!(frames%num===0) ) return;
     var truck = new Truck(canvas.width, canvas.height - 192, images.truck);
     trucks.push(truck);
@@ -386,7 +408,7 @@ function drawTamaleros(){
 }
 
 function generateTrajineras(){
-    var num = Math.floor(Math.random() * 30 + 140 )
+    var num = Math.floor(Math.random() * 20 + 100 )
     if(!(frames%num===0) ) return;
     var trajinera = new Trajinera(-64, 128, images.trajinera);
     trajineras.push(trajinera);
@@ -403,7 +425,7 @@ function drawTrajineras(){
 }
 
 function generateAxolotls(){
-    if(!(frames%170===0) ) return;
+    if(!(frames%60===0) ) return;
     var axolotl = new Axolotl(canvas.width, 64, images.axolotl);
     axolotls.push(axolotl);
 }
@@ -434,7 +456,7 @@ function drawLives(){
 
 function checkIfDrowning(){
         var inWater = (xolo.y <= 130) && (xolo.y >= 64);
-        console.log(onTrajinera,onAxolotl,inWater);
+        // console.log(onTrajinera,onAxolotl,inWater);
         return !onTrajinera && !onAxolotl && inWater;
 }
 
@@ -445,17 +467,21 @@ function checkIfDrowning(){
 function xoloDies(){
     clearInterval(interval);
     sound.pause();
+    organ.pause();
     interval = undefined;
     sound.currentTime = 0;
     ctx.fillStyle = "#fe3f80";
     ctx.font = '80px Mexcellent-Regular';
     ctx.fillText("x", xolo.x + 16, xolo.y+64);
     lives--;
+    totalTime += currentTime;
     if (lives===0) {
         sound.play();
         board.gameOver();
     } else {
         setTimeout(function(){
+            // totalTime += Math.floor(frames / 60);
+            // console.log(totalTime);
             restart();
         }, 1000);
     }
@@ -463,18 +489,18 @@ function xoloDies(){
 
 function checkIfWon(){
     if (xolo.isTouching(chinampaOne) || xolo.isTouching(chinampaTwo) || xolo.isTouching(chinampaThree)) {
-        console.log(wins);
         score+=50;
         clearInterval(interval);
         sound.pause();
         interval = undefined;
         sound.currentTime = 0;
         setTimeout(function(){
-            wins++;
-            if (wins === 3) {
+            if (onChinampaOne && onChinampaTwo && onChinampaThree) {
+                totalTime += currentTime;
                 sound.play();
                 youWon();
             } else {
+            totalTime += currentTime;
             restart();
         }
         }, 1000);
@@ -484,6 +510,9 @@ function checkIfWon(){
 function youWon(){
     
     ctx.font = "120px Mexcellent-Regular";
+        onChinampaOne = false;
+        onChinampaTwo = false;
+        onChinampaThree = false;
         ctx.fillStyle = 'white';
         ctx.fillText("you won!", 280,230);
         ctx.font = "18px Courier";
@@ -491,12 +520,13 @@ function youWon(){
         ctx.fillText("Press 'Esc' to play again", 370,canvas.height-30);
         ctx.fillStyle = 'red';
         ctx.font = "40px Mexcellent-Regular";
-        var time = Math.floor(frames / 60);
         if (player === 1) {
-            var playerOneScore = score - time;
+            totalTime += Math.floor(frames / 60);
+            playerOneScore = score - totalTime;
             ctx.fillText("Player One Score: " + playerOneScore, 315,300);
         } else {
-            var playerTwoScore = score - time;
+            totalTime += Math.floor(frames / 60);
+            var playerTwoScore = score - totalTime;
             ctx.fillText("Player Two Score: " + playerTwoScore, 315,300);
             if (playerOneScore > playerTwoScore){
                 ctx.fillText("Player One Wins!", 340,365);
@@ -507,6 +537,8 @@ function youWon(){
 }
 
 function restart(){
+    organ.play();
+    console.log(totalTime);
     if(interval) return;
     taxis = [];
     trucks = [];
@@ -527,7 +559,6 @@ start();
 addEventListener('keydown', function(e){
     switch(e.keyCode){      
         case 39:
-        // if(xolo.x === canvas.width - xolo.width) return;
             xolo.goRight();
             if (onAxolotl) onAxolotl = false;
             if (onTrajinera) {
@@ -536,7 +567,6 @@ addEventListener('keydown', function(e){
             }
             break;
         case 37:
-            // if(xolo.x === 0) return;
             xolo.goLeft();
             if (onTrajinera) onTrajinera = false;
             if (onAxolotl) {
@@ -547,12 +577,14 @@ addEventListener('keydown', function(e){
         case 38:
         if (xolo.y > 64 || xolo.x >= chinampaOne.x) {
             xolo.goUp();
+            if (xolo.y === 0 && xolo.x > 512 && xolo.x < 632) xoloDies();
+            if (xolo.y === 0 && xolo.x > 712 && xolo.x < 825) xoloDies();
+            if (xolo.y === 0 && xolo.x > 900) xoloDies();
             if (onTrajinera) onTrajinera = false;
             if (onAxolotl) {
                 onAxolotl = false;
             }
             }
-            // if (!onAxolotl) xoloDies();
             break;
         case 40:
             xolo.goDown();
@@ -562,13 +594,13 @@ addEventListener('keydown', function(e){
         case 27:
             lives = 4;
             score = 0;
-            wins = 0;
             if (player === 1) {
                 player++;
             } else {
                 player--;
             }
             restart();
+            sound.pause();
             break;
     }
 
