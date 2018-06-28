@@ -30,6 +30,7 @@ var axolotls = [];
 var lives = 4;
 var score = 0;
 var wins = 0;
+var player = 1;
 
 //classes
 class Board{
@@ -56,11 +57,19 @@ class Board{
         ctx.fillStyle = 'red';
         ctx.font = "40px Mexcellent-Regular";
         var time = Math.floor(frames / 60);
-        ctx.fillText("Player Score: " + (score + time), 360,300);
-        ctx.globalAlpha = 0.5;
-        ctx.fillStyle = "gray";
-        ctx.fillRect(this.x, this.y, canvas.width, canvas.height);
-
+        if (player === 1) {
+            var playerOneScore = score - time;
+            ctx.fillText("Player One Score: " + playerOneScore, 315,300);
+        } else {
+            var playerTwoScore = score - time;
+            ctx.fillText("Player Two Score: " + playerTwoScore, 315,300);
+            if (playerOneScore > playerTwoScore){
+                ctx.fillText("Player One Wins!", 340,365);
+            } else {
+                ctx.fillText("Player Two Wins!", 340,365);
+            }
+        }
+        
     }
   
     draw(){
@@ -274,12 +283,14 @@ class Car{
 //instances
 var board = new Board();
 var xolo = new Xolo(canvas.width / 2,canvas.height - 62);
-var chinampaOne = new Chinampa(canvas.width - 512, 0, images.chinampa);
-var chinampaTwo = new Chinampa(canvas.width - 320, 0, images.chinampa);
-var chinampaThree = new Chinampa(canvas.width - 128, 0, images.chinampa);
+var chinampaOne = new Chinampa(canvas.width - 576, 0, images.chinampa);
+var chinampaTwo = new Chinampa(canvas.width - 384, 0, images.chinampa);
+var chinampaThree = new Chinampa(canvas.width - 192, 0, images.chinampa);
 var xoloWinOne = new Xolo(chinampaOne.x,chinampaOne.y);
 var xoloWinTwo = new Xolo(chinampaTwo.x,chinampaTwo.y);
 var xoloWinThree = new Xolo(chinampaThree.x,chinampaThree.y);
+var onTrajinera = false;
+var onAxolotl = false;
 
 // var life = new XoloHead(160,12,images.head)
 
@@ -304,6 +315,7 @@ function update(){
     generateTamaleros();
     drawTamaleros();
     checkIfWon();
+    if (checkIfDrowning()) xoloDies();
     if (wins === 1) {
         xoloWinOne.draw()
     };
@@ -322,9 +334,7 @@ function update(){
   function start(){
     if(interval) return; //what does this do
     interval = setInterval(update, 1000/60);
-    // sound.play();
   }
-  
 
 //aux functions
 
@@ -387,6 +397,7 @@ function drawTrajineras(){
         trajinera.draw();
         if(xolo.isTouching(trajinera)){
             xoloHopsOn(trajinera);
+            onTrajinera = true;
         }
     })
 }
@@ -402,8 +413,14 @@ function drawAxolotls(){
         axolotl.draw();
         if(xolo.isTouching(axolotl)){
             xoloHopsOn(axolotl);
+            onAxolotl = true;
         }
     })
+}
+
+function xoloHopsOn(item){
+    xolo.x = item.x;
+    xolo.y = item.y;
 }
 
 function drawLives(){
@@ -416,32 +433,14 @@ function drawLives(){
 }
 
 function checkIfDrowning(){
-        var onTrajinera = false;
-        if ((xolo.y === 125)) onTrajinera = true;
-        var onAxolotl = false;
-        if ((xolo.y === 61)) onAxolotl = true;
-        var inWater = (xolo.y <= 130) && (xolo.y > 64);
+        var inWater = (xolo.y <= 130) && (xolo.y >= 64);
+        console.log(onTrajinera,onAxolotl,inWater);
         return !onTrajinera && !onAxolotl && inWater;
 }
 
-function checkIfWon(){
-    if (xolo.isTouching(chinampaOne) || xolo.isTouching(chinampaTwo) || xolo.isTouching(chinampaThree)) {
-        console.log(wins);
-        score+=50; //these are not working
-        clearInterval(interval);
-        sound.pause();
-        interval = undefined;
-        sound.currentTime = 0;
-        setTimeout(function(){
-            wins++;
-            if (wins === 3) {
-                youWon();
-            } else {
-            restart();
-        }
-        }, 1000);
-  }
-}
+//tft when on trajinera - correct!
+//tft when hops into water - incorrect! no longer on traji
+//tff when back on grass - incorrect! no longer on traji
 
 function xoloDies(){
     clearInterval(interval);
@@ -453,6 +452,7 @@ function xoloDies(){
     ctx.fillText("x", xolo.x + 16, xolo.y+64);
     lives--;
     if (lives===0) {
+        sound.play();
         board.gameOver();
     } else {
         setTimeout(function(){
@@ -461,7 +461,28 @@ function xoloDies(){
     }
 }
 
+function checkIfWon(){
+    if (xolo.isTouching(chinampaOne) || xolo.isTouching(chinampaTwo) || xolo.isTouching(chinampaThree)) {
+        console.log(wins);
+        score+=50;
+        clearInterval(interval);
+        sound.pause();
+        interval = undefined;
+        sound.currentTime = 0;
+        setTimeout(function(){
+            wins++;
+            if (wins === 3) {
+                sound.play();
+                youWon();
+            } else {
+            restart();
+        }
+        }, 1000);
+  }
+}
+
 function youWon(){
+    
     ctx.font = "120px Mexcellent-Regular";
         ctx.fillStyle = 'white';
         ctx.fillText("you won!", 280,230);
@@ -471,15 +492,18 @@ function youWon(){
         ctx.fillStyle = 'red';
         ctx.font = "40px Mexcellent-Regular";
         var time = Math.floor(frames / 60);
-        ctx.fillText("Player Score: " + (score + time), 360,300);
-        ctx.globalAlpha = 0.5;
-        ctx.fillStyle = "gray";
-        ctx.fillRect(this.x, this.y, canvas.width, canvas.height);
-}
-
-function xoloHopsOn(item){
-    xolo.x = item.x;
-    xolo.y = item.y;
+        if (player === 1) {
+            var playerOneScore = score - time;
+            ctx.fillText("Player One Score: " + playerOneScore, 315,300);
+        } else {
+            var playerTwoScore = score - time;
+            ctx.fillText("Player Two Score: " + playerTwoScore, 315,300);
+            if (playerOneScore > playerTwoScore){
+                ctx.fillText("Player One Wins!", 340,365);
+            } else {
+                ctx.fillText("Player Two Wins!", 340,365);
+            }
+        }
 }
 
 function restart(){
@@ -505,21 +529,47 @@ addEventListener('keydown', function(e){
         case 39:
         // if(xolo.x === canvas.width - xolo.width) return;
             xolo.goRight();
+            if (onAxolotl) onAxolotl = false;
+            if (onTrajinera) {
+                xolo.x+=64;
+                onTrajinera = false;
+            }
             break;
         case 37:
             // if(xolo.x === 0) return;
             xolo.goLeft();
+            if (onTrajinera) onTrajinera = false;
+            if (onAxolotl) {
+                xolo.x-=64;
+                onAxolotl = false;
+            }
             break;
         case 38:
+        if (xolo.y > 64 || xolo.x >= chinampaOne.x) {
             xolo.goUp();
-            // start();
+            if (onTrajinera) onTrajinera = false;
+            if (onAxolotl) {
+                onAxolotl = false;
+            }
+            }
+            // if (!onAxolotl) xoloDies();
             break;
         case 40:
             xolo.goDown();
+            if (onTrajinera) onTrajinera = false;
+            if (onAxolotl) onAxolotl = false;
             break;
-        // case 27:
-        //     restart();
-        //     break;
+        case 27:
+            lives = 4;
+            score = 0;
+            wins = 0;
+            if (player === 1) {
+                player++;
+            } else {
+                player--;
+            }
+            restart();
+            break;
     }
 
 })  
