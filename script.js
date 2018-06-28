@@ -304,6 +304,10 @@ var chinampaThree = new Chinampa(canvas.width - 192, 0, images.chinampa);
 var xoloWinOne = new Xolo(chinampaOne.x,chinampaOne.y);
 var xoloWinTwo = new Xolo(chinampaTwo.x,chinampaTwo.y);
 var xoloWinThree = new Xolo(chinampaThree.x,chinampaThree.y);
+var car1 = new Car(canvas.width/4, canvas.height - 128, images.car);
+var truck1 = new Truck(canvas.width/2, canvas.height - 192, images.truck);
+var truck2 = new Truck(canvas.width/5, canvas.height - 192, images.truck);
+var bike1 = new Bike(canvas.width/3, canvas.height - 256, images.cyclist);
 
 // var life = new XoloHead(160,12,images.head)
 
@@ -325,6 +329,10 @@ function update(){
     drawTrajineras();
     drawAxolotls();
     xolo.draw();
+    car1.draw();
+    truck1.draw();
+    truck2.draw();
+    bike1.draw();
     drawTaxis();
     drawTrucks();
     drawTamaleros();
