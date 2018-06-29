@@ -316,6 +316,7 @@ var truck2 = new Truck(canvas.width/5, canvas.height - 192, images.truck);
 var truck3 = new Truck(canvas.width * 2/3, canvas.height - 192, images.truck);
 var bike1 = new Bike(canvas.width/3, canvas.height - 256, images.cyclist);
 var bike2 = new Bike(canvas.width * 3/4, canvas.height - 256, images.cyclist);
+var bike3 = new Bike(0, canvas.height - 256, images.cyclist);
 
 // var life = new XoloHead(160,12,images.head)
 
@@ -339,6 +340,7 @@ function update(){
     truck3.draw();
     bike1.draw();
     bike2.draw();
+    bike3.draw();
     generateTrajineras();
     generateAxolotls();
     generateTaxis();
@@ -591,7 +593,8 @@ function restart(){
     truck2.x = canvas.width/5;
     truck3.x = canvas.width * 2/3;
     bike1.x = canvas.width/3;
-    bike2.x = canvas.width * 3/4;    
+    bike2.x = canvas.width * 3/4; 
+    bike3.x = 0;   
 
     start();
 }
