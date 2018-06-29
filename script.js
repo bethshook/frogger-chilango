@@ -9,7 +9,6 @@ var interval;
 var frames = 0;
 var framesCounterTruck = 21;
 var framesCounterTamal = 21;
-var framesCounterTraji = 21;
 var images = {
     xolo: './images/xolo3.png',
     bg: './images/cdmx-clean.png',
@@ -195,7 +194,7 @@ class Car{
     }
     
       draw(){
-        this.x-=5;
+        this.x-=4;
         ctx.drawImage(this.image,this.x,this.y,this.width,this.height);
       }
   }
@@ -216,7 +215,7 @@ class Car{
     }
   
       draw(){
-        this.x-=5;
+        this.x-=3;
         ctx.drawImage(this.image,this.x,this.y,this.width,this.height);
       }
   }
@@ -332,14 +331,6 @@ function update(){
     chinampaOne.draw();
     chinampaTwo.draw();
     chinampaThree.draw();
-    generateTrajineras();
-    generateAxolotls();
-    generateTaxis();
-    generateTrucks();
-    generateTamaleros();
-    drawLives();
-    drawTrajineras();
-    drawAxolotls();
     car1.draw();
     car2.draw();
     car3.draw();
@@ -348,6 +339,14 @@ function update(){
     truck3.draw();
     bike1.draw();
     bike2.draw();
+    generateTrajineras();
+    generateAxolotls();
+    generateTaxis();
+    generateTrucks();
+    generateTamaleros();
+    drawLives();
+    drawTrajineras();
+    drawAxolotls();
     xolo.draw();
     drawTaxis();
     drawTrucks();
@@ -383,7 +382,7 @@ function update(){
 //aux functions
 
 function generateTaxis(){
-    if(!(frames%50===0) ) return;
+    if(!(frames%90===0) ) return;
     var taxi = new Car(canvas.width, canvas.height - 128, images.car);
     taxis.push(taxi);
 }
@@ -404,7 +403,7 @@ function generateTrucks(){
         return;
     }
     if(frames % num === 0){
-        var truck = new Truck(canvas.width, canvas.height - 192, images.truck);
+        var truck = new Truck(canvas.width - 32, canvas.height - 192, images.truck);
         trucks.push(truck);
         framesCounterTruck = frames;
     }
@@ -422,9 +421,9 @@ function drawTrucks(){
 }
 
 function generateTamaleros(){
-    var num = Math.floor(Math.random() * 150)
+    var num = Math.floor(Math.random() * 240)
     var f = frames - framesCounterTamal; 
-    if ( f < 80 ) {
+    if ( f < 140 ) {
         return;
     }
     if(frames % num === 0){
@@ -445,7 +444,6 @@ function drawTamaleros(){
 }
 
 function generateTrajineras(){
-    // var num = Math.floor(Math.random() * 20 + 100 )
     if(!(frames%110===0) ) return;
     var trajinera = new Trajinera(-64, 128, images.trajinera);
     trajineras.push(trajinera);
@@ -519,7 +517,6 @@ function xoloDies(){
     } else {
         setTimeout(function(){
             restart();
-            truck2.draw();
         }, 1000);
     }
 }
@@ -615,7 +612,7 @@ addEventListener('keydown', function(e){
             }
             break;
         case 38:
-        if (xolo.y > 64 || xolo.x >= 440) {
+        if (xolo.y > 64 || xolo.x >= 436) {
             xolo.goUp();
             if (xolo.y === 0 && xolo.x > 512 && xolo.x < 624) xoloDies();
             if (xolo.y === 0 && xolo.x > 712 && xolo.x < 820) xoloDies();
