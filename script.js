@@ -584,6 +584,15 @@ function restart(){
     framesCounterTruck = 21;
     xolo.x = canvas.width / 2;
     xolo.y = canvas.height - 62;
+    car1.x = canvas.width/4;
+    car2.x = canvas.width/2;
+    car3.x = canvas.width * 3/4;
+    truck1.x = canvas.width/2;
+    truck2.x = canvas.width/5;
+    truck3.x = canvas.width * 2/3;
+    bike1.x = canvas.width/3;
+    bike2.x = canvas.width * 3/4;    
+
     start();
 }
 
