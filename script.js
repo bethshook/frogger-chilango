@@ -80,9 +80,11 @@ class Board{
             var playerTwoScore = score - totalTime;
             ctx.fillText("Player Two Score: " + playerTwoScore, 315,300);
             if (playerOneScore > playerTwoScore){
-                ctx.fillText("Player One Wins!", 340,365);
+                ctx.fillText("Player One Wins!", 355,365);
+            } else if (playerTwoScore > playerOneScore) {
+                ctx.fillText("Player Two Wins!", 355,365);
             } else {
-                ctx.fillText("Player Two Wins!", 340,365);
+                ctx.fillText("It's a tie!", 355,365);
             }
             totalTime = 0;
 
@@ -522,6 +524,7 @@ function checkIfWon(){
         score+=50;
         clearInterval(interval);
         sound.pause();
+        organ.pause();
         interval = undefined;
         sound.currentTime = 0;
         setTimeout(function(){
@@ -538,7 +541,6 @@ function checkIfWon(){
 }
 
 function youWon(){
-    
     ctx.font = "120px Mexcellent-Regular";
         onChinampaOne = false;
         onChinampaTwo = false;
@@ -559,11 +561,11 @@ function youWon(){
             var playerTwoScore = score - totalTime;
             ctx.fillText("Player Two Score: " + playerTwoScore, 315,300);
             if (playerOneScore > playerTwoScore){
-                ctx.fillText("Player One Wins!", 340,365);
+                ctx.fillText("Player One Wins!", 355,365);
             } else if (playerTwoScore > playerOneScore) {
-                ctx.fillText("Player Two Wins!", 340,365);
+                ctx.fillText("Player Two Wins!", 355,365);
             } else {
-                ctx.fillText("It's a tie!", 340,365);
+                ctx.fillText("It's a tie!", 355,365);
             }
         }
 }
@@ -571,6 +573,7 @@ function youWon(){
 function restart(){
     console.log(totalTime);
     if(interval) return;
+    truck1.draw();
     taxis = [];
     trucks = [];
     tamaleros = [];
@@ -612,7 +615,7 @@ addEventListener('keydown', function(e){
         if (xolo.y > 64 || xolo.x >= 440) {
             xolo.goUp();
             if (xolo.y === 0 && xolo.x > 512 && xolo.x < 624) xoloDies();
-            if (xolo.y === 0 && xolo.x > 712 && xolo.x < 822) xoloDies();
+            if (xolo.y === 0 && xolo.x > 712 && xolo.x < 820) xoloDies();
             if (xolo.y === 0 && xolo.x > 900) xoloDies();
             if (onChinampaOne && xolo.isTouching(chinampaOne)) xoloDies();
             if (onChinampaTwo && xolo.isTouching(chinampaTwo)) xoloDies();
