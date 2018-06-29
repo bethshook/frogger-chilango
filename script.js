@@ -7,6 +7,9 @@ var ctx = canvas.getContext('2d');
 //constants
 var interval;
 var frames = 0;
+var framesCounterTruck = 21;
+var framesCounterTamal = 21;
+var framesCounterTraji = 21;
 var images = {
     xolo: './images/xolo3.png',
     bg: './images/cdmx-clean.png',
@@ -105,7 +108,7 @@ class Board{
         ctx.closePath();
         ctx.stroke();
         ctx.fillStyle = "black";
-        ctx.font = '22px Courier';
+        ctx.font = '20px Avenir';
         ctx.fillText("Score: " + score, 30, 25)
         ctx.fillText("Time: " + currentTime, 30, 50)
     }
@@ -308,6 +311,7 @@ var car1 = new Car(canvas.width/4, canvas.height - 128, images.car);
 var truck1 = new Truck(canvas.width/2, canvas.height - 192, images.truck);
 var truck2 = new Truck(canvas.width/5, canvas.height - 192, images.truck);
 var bike1 = new Bike(canvas.width/3, canvas.height - 256, images.cyclist);
+var bike2 = new Bike(canvas.width * 3/4, canvas.height - 256, images.cyclist);
 
 // var life = new XoloHead(160,12,images.head)
 
@@ -320,6 +324,11 @@ function update(){
     chinampaOne.draw();
     chinampaTwo.draw();
     chinampaThree.draw();
+    car1.draw();
+    truck1.draw();
+    truck2.draw();
+    bike1.draw();
+    bike2.draw();
     generateTrajineras();
     generateAxolotls();
     generateTaxis();
@@ -329,10 +338,6 @@ function update(){
     drawTrajineras();
     drawAxolotls();
     xolo.draw();
-    car1.draw();
-    truck1.draw();
-    truck2.draw();
-    bike1.draw();
     drawTaxis();
     drawTrucks();
     drawTamaleros();
@@ -350,6 +355,7 @@ function update(){
     if ((xolo.x < 0) || (xolo.x > canvas.width - 64)) {
         xoloDies();
     }
+    if (xolo.isTouching(car1) || xolo.isTouching(truck1) || xolo.isTouching(truck2) || xolo.isTouching(bike1) || xolo.isTouching(bike2)) xoloDies();
     if (onChinampaOne) xoloWinOne.draw();
     if (onChinampaTwo) xoloWinTwo.draw();
     if (onChinampaThree) xoloWinThree.draw();
@@ -384,10 +390,18 @@ function drawTaxis(){
 }
 
 function generateTrucks(){
-    var num = Math.floor(Math.random() * 50 + 90 )
-    if(!(frames%num===0) ) return;
-    var truck = new Truck(canvas.width, canvas.height - 192, images.truck);
-    trucks.push(truck);
+    var num = Math.floor(Math.random() * 140)
+    var f = frames - framesCounterTruck; 
+    if ( f < 60 ) {
+        return;
+    }
+    if(frames % num === 0){
+        var truck = new Truck(canvas.width, canvas.height - 192, images.truck);
+        trucks.push(truck);
+        framesCounterTruck = frames;
+    }
+    return;
+    //if(!(frames%(20 + num)) ===0) ) return;
 }
 
 function drawTrucks(){
@@ -400,10 +414,17 @@ function drawTrucks(){
 }
 
 function generateTamaleros(){
-    var num = Math.floor(Math.random() * 20 + 140 )
-    if(!(frames%num===0) ) return;
-    var tamalero = new Bike(-64, canvas.height - 256, images.cyclist);
-    tamaleros.push(tamalero);
+    var num = Math.floor(Math.random() * 150)
+    var f = frames - framesCounterTamal; 
+    if ( f < 80 ) {
+        return;
+    }
+    if(frames % num === 0){
+        var tamalero = new Bike(-64, canvas.height - 256, images.cyclist);
+        tamaleros.push(tamalero);
+        framesCounterTamal = frames;
+    }
+    return;
 }
 
 function drawTamaleros(){
@@ -416,8 +437,8 @@ function drawTamaleros(){
 }
 
 function generateTrajineras(){
-    var num = Math.floor(Math.random() * 20 + 100 )
-    if(!(frames%num===0) ) return;
+    // var num = Math.floor(Math.random() * 20 + 100 )
+    if(!(frames%110===0) ) return;
     var trajinera = new Trajinera(-64, 128, images.trajinera);
     trajineras.push(trajinera);
 }
@@ -539,8 +560,10 @@ function youWon(){
             ctx.fillText("Player Two Score: " + playerTwoScore, 315,300);
             if (playerOneScore > playerTwoScore){
                 ctx.fillText("Player One Wins!", 340,365);
-            } else {
+            } else if (playerTwoScore > playerOneScore) {
                 ctx.fillText("Player Two Wins!", 340,365);
+            } else {
+                ctx.fillText("It's a tie!", 340,365);
             }
         }
 }
@@ -554,6 +577,8 @@ function restart(){
     trajineras = [];
     axolotls = [];
     frames = 0;
+    framesCounterTamal = 21;
+    framesCounterTruck = 21;
     xolo.x = canvas.width / 2;
     xolo.y = canvas.height - 62;
     start();
@@ -584,10 +609,10 @@ addEventListener('keydown', function(e){
             }
             break;
         case 38:
-        if (xolo.y > 64 || xolo.x >= chinampaOne.x) {
+        if (xolo.y > 64 || xolo.x >= 440) {
             xolo.goUp();
             if (xolo.y === 0 && xolo.x > 512 && xolo.x < 624) xoloDies();
-            if (xolo.y === 0 && xolo.x > 712 && xolo.x < 825) xoloDies();
+            if (xolo.y === 0 && xolo.x > 712 && xolo.x < 822) xoloDies();
             if (xolo.y === 0 && xolo.x > 900) xoloDies();
             if (onChinampaOne && xolo.isTouching(chinampaOne)) xoloDies();
             if (onChinampaTwo && xolo.isTouching(chinampaTwo)) xoloDies();
