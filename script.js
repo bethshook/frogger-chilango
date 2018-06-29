@@ -367,7 +367,7 @@ function update(){
     if ((xolo.x < 0) || (xolo.x > canvas.width - 64)) {
         xoloDies();
     }
-    if (xolo.isTouching(car1) || xolo.isTouching(car2) || xolo.isTouching(car3) || xolo.isTouching(truck1) || xolo.isTouching(truck2) || xolo.isTouching(truck3) || xolo.isTouching(bike1) || xolo.isTouching(bike2)) xoloDies();
+    if (xolo.isTouching(car1) || xolo.isTouching(car2) || xolo.isTouching(car3) || xolo.isTouching(truck1) || xolo.isTouching(truck2) || xolo.isTouching(truck3) || xolo.isTouching(bike1) || xolo.isTouching(bike2) || xolo.isTouching(bike3)) xoloDies();
     
 }
   
