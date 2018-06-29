@@ -195,7 +195,7 @@ class Car{
     }
     
       draw(){
-        this.x-=6;
+        this.x-=5;
         ctx.drawImage(this.image,this.x,this.y,this.width,this.height);
       }
   }
@@ -310,8 +310,11 @@ var xoloWinOne = new Xolo(chinampaOne.x,chinampaOne.y);
 var xoloWinTwo = new Xolo(chinampaTwo.x,chinampaTwo.y);
 var xoloWinThree = new Xolo(chinampaThree.x,chinampaThree.y);
 var car1 = new Car(canvas.width/4, canvas.height - 128, images.car);
+var car2 = new Car(canvas.width/2, canvas.height - 128, images.car);
+var car3 = new Car(canvas.width * 3/4, canvas.height - 128, images.car);
 var truck1 = new Truck(canvas.width/2, canvas.height - 192, images.truck);
 var truck2 = new Truck(canvas.width/5, canvas.height - 192, images.truck);
+var truck3 = new Truck(canvas.width * 2/3, canvas.height - 192, images.truck);
 var bike1 = new Bike(canvas.width/3, canvas.height - 256, images.cyclist);
 var bike2 = new Bike(canvas.width * 3/4, canvas.height - 256, images.cyclist);
 
@@ -323,14 +326,12 @@ function update(){
     frames++;
     ctx.clearRect(0,0,canvas.width,canvas.height);
     board.draw();
+    if (onChinampaOne) xoloWinOne.draw();
+    if (onChinampaTwo) xoloWinTwo.draw();
+    if (onChinampaThree) xoloWinThree.draw();
     chinampaOne.draw();
     chinampaTwo.draw();
     chinampaThree.draw();
-    car1.draw();
-    truck1.draw();
-    truck2.draw();
-    bike1.draw();
-    bike2.draw();
     generateTrajineras();
     generateAxolotls();
     generateTaxis();
@@ -339,6 +340,14 @@ function update(){
     drawLives();
     drawTrajineras();
     drawAxolotls();
+    car1.draw();
+    car2.draw();
+    car3.draw();
+    truck1.draw();
+    truck2.draw();
+    truck3.draw();
+    bike1.draw();
+    bike2.draw();
     xolo.draw();
     drawTaxis();
     drawTrucks();
@@ -357,10 +366,7 @@ function update(){
     if ((xolo.x < 0) || (xolo.x > canvas.width - 64)) {
         xoloDies();
     }
-    if (xolo.isTouching(car1) || xolo.isTouching(truck1) || xolo.isTouching(truck2) || xolo.isTouching(bike1) || xolo.isTouching(bike2)) xoloDies();
-    if (onChinampaOne) xoloWinOne.draw();
-    if (onChinampaTwo) xoloWinTwo.draw();
-    if (onChinampaThree) xoloWinThree.draw();
+    if (xolo.isTouching(car1) || xolo.isTouching(car2) || xolo.isTouching(car3) || xolo.isTouching(truck1) || xolo.isTouching(truck2) || xolo.isTouching(truck3) || xolo.isTouching(bike1) || xolo.isTouching(bike2)) xoloDies();
     
 }
   
@@ -512,9 +518,8 @@ function xoloDies(){
         board.gameOver();
     } else {
         setTimeout(function(){
-            // totalTime += Math.floor(frames / 60);
-            // console.log(totalTime);
             restart();
+            truck2.draw();
         }, 1000);
     }
 }
@@ -571,9 +576,7 @@ function youWon(){
 }
 
 function restart(){
-    console.log(totalTime);
     if(interval) return;
-    truck1.draw();
     taxis = [];
     trucks = [];
     tamaleros = [];
